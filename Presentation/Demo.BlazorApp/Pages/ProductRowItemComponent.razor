@@ -1,0 +1,63 @@
+﻿@using Demo.ApiClient.Models.ApiModels
+
+<tr>
+	@if (!IsEditMode)
+	{
+		<!-- Normal display -->
+		<td>@Product.ProductCode</td>
+		<td>@Product.ProductName</td>
+		<td>@Product.Price?.ToString("0.00")</td>
+		<td>
+			<button class="btn btn-warning btn-sm" @onclick="EnableEdit">Edit</button>
+			<button class="btn btn-danger btn-sm" @onclick="Delete">Delete</button>
+		</td>
+	}
+	else
+	{
+		<!-- Edit mode -->
+		<td><input class="form-control" @bind="EditModel.ProductCode" /></td>
+		<td><input class="form-control" @bind="EditModel.ProductName" /></td>
+		<td><input class="form-control" type="number" step="0.01" @bind="EditModel.Price" /></td>
+		<td>
+			<button class="btn btn-success btn-sm" @onclick="Save">Save</button>
+			<button class="btn btn-secondary btn-sm" @onclick="Cancel">Cancel</button>
+		</td>
+	}
+</tr>
+
+@code {
+	[Parameter] public Product Product { get; set; } = default!;
+	[Parameter] public EventCallback<Product> OnUpdate { get; set; }
+	[Parameter] public EventCallback<int> OnDelete { get; set; }
+
+	bool IsEditMode = false;
+	Product EditModel = new Product();
+
+	void EnableEdit()
+	{
+		IsEditMode = true;
+		EditModel = new Product
+		{
+			Id = Product.Id,
+			ProductCode = Product.ProductCode,
+			ProductName = Product.ProductName,
+			Price = Product.Price
+		};
+	}
+
+	async Task Save()
+	{
+		IsEditMode = false;
+		await OnUpdate.InvokeAsync(EditModel);
+	}
+
+	void Cancel()
+	{
+		IsEditMode = false;
+	}
+
+	async Task Delete()
+	{
+		await OnDelete.InvokeAsync(Product.Id);
+	}
+}
