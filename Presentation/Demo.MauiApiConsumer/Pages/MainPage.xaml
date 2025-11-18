@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Demo.MauiApiConsumer.MainPage">
+
+    <VerticalStackLayout Padding="10" Spacing="10">
+
+        <!-- Top Buttons -->
+        <HorizontalStackLayout Spacing="10">
+            <Button x:Name="btnAdd" Text="Add" Clicked="btnAdd_Clicked" 
+                    BackgroundColor="#0078D7" TextColor="White" CornerRadius="8" />
+            <Button x:Name="btnShowProducts" Text="Show Products" Clicked="btnShowProducts_Clicked"
+                    BackgroundColor="#28A745" TextColor="White" CornerRadius="8"/>
+        </HorizontalStackLayout>
+
+        <!-- Product List -->
+        <CollectionView x:Name="productListView" 
+                        ItemsSource="{Binding Products}" 
+                        SelectionMode="Single" SelectionChanged="productListView_SelectionChanged">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame CornerRadius="10" Padding="10" Margin="0,5"
+                           BorderColor="#DDD" HasShadow="True" >
+                        <Grid ColumnSpacing="10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="2*"/>
+                                <ColumnDefinition Width="2*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Product Name -->
+                            <Label Grid.Column="0" Text="{Binding ProductName}" 
+                                   FontAttributes="Bold" FontSize="16" VerticalOptions="Center"/>
+
+                            <!-- Product Code -->
+                            <Label Grid.Column="1" Text="{Binding ProductCode}" 
+                                   FontSize="14" TextColor="#555" VerticalOptions="Center"/>
+
+                            <!-- Price -->
+                            <Label Grid.Column="2" Text="{Binding Price, StringFormat='${0:F2}'}" 
+                                   FontAttributes="Bold" FontSize="16" TextColor="#E53935" VerticalOptions="Center"/>
+                        </Grid>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+    </VerticalStackLayout>
+</ContentPage>
