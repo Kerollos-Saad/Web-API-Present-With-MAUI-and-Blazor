@@ -44,8 +44,8 @@ namespace Demo.Api
                 app.MapOpenApi();
                 app.UseSwaggerUI(options =>
                 {
-	                options.SwaggerEndpoint("openapi/v1.json", "Demo API v1");
-	                options.RoutePrefix = "swagger";
+	                options.SwaggerEndpoint("/openapi/v1.json", "Demo API v1");
+	                options.RoutePrefix = string.Empty;
                 });
             }
 
