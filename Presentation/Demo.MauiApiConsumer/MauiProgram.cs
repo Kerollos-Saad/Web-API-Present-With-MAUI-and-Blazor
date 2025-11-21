@@ -8,6 +8,20 @@ namespace Demo.MauiApiConsumer
 	{
 		public static MauiApp CreateMauiApp()
 		{
+			// Catch unhandled exceptions
+			AppDomain.CurrentDomain.UnhandledException += (sender, args) =>
+			{
+				var ex = args.ExceptionObject as Exception;
+				System.Diagnostics.Debug.WriteLine($"UNHANDLED EXCEPTION: {ex?.Message}");
+				System.Diagnostics.Debug.WriteLine($"Stack Trace: {ex?.StackTrace}");
+			};
+
+			TaskScheduler.UnobservedTaskException += (sender, args) =>
+			{
+				System.Diagnostics.Debug.WriteLine($"UNOBSERVED TASK EXCEPTION: {args.Exception.Message}");
+				args.SetObserved();
+			};
+
 			var builder = MauiApp.CreateBuilder();
 			builder
 				.UseMauiApp<App>()
@@ -17,35 +31,44 @@ namespace Demo.MauiApiConsumer
 					fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
 				});
 
-			//Windows	https://localhost:44300/
-			//Android emulator    http://10.0.2.2:5015/
-			//Real Android device http://YOUR_PC_IP:5015/
-			//iOS Simulator   http://localhost:5015/
-			//Real iPhone device http://YOUR_PC_IP:5015/
-
 			string apiUrl = "";
-
 #if ANDROID
-			// Android emulator loopback to host
-			apiUrl = "http://10.0.2.2:5015/";
+			apiUrl = DeviceInfo.DeviceType == DeviceType.Virtual
+				? "http://10.0.2.2:5015/"
+				: "http://192.168.1.111:5015/";
+
+			System.Diagnostics.Debug.WriteLine($"Android Device Type: {DeviceInfo.DeviceType}");
 #elif WINDOWS
-            apiUrl = "https://localhost:44300/";
+            apiUrl = "http://localhost:5015/";
 #elif IOS
-            // For iOS simulator, localhost loopback is different
             apiUrl = "http://localhost:5015/";
 #else
-            // default (real device must use real network IP)
-            apiUrl = "http://YOUR_PC_LOCAL_IP:5015/";
+            apiUrl = "http://192.168.1.111:5015/";
 #endif
 
-			builder.Services.AddDemoApiClientService(x => x.ApiBaseAddress = apiUrl);
+			System.Diagnostics.Debug.WriteLine($"=== API URL: {apiUrl} ===");
+
+			try
+			{
+				builder.Services.AddDemoApiClientService(x => x.ApiBaseAddress = apiUrl);
+				System.Diagnostics.Debug.WriteLine("API Client Service registered successfully");
+			}
+			catch (Exception ex)
+			{
+				System.Diagnostics.Debug.WriteLine($"ERROR registering API service: {ex.Message}");
+				throw;
+			}
+
 			builder.Services.AddTransient<MainPage>();
 
 #if DEBUG
 			builder.Logging.AddDebug();
+			builder.Logging.SetMinimumLevel(LogLevel.Debug);
 #endif
 
-			return builder.Build();
+			var app = builder.Build();
+			System.Diagnostics.Debug.WriteLine("MauiApp built successfully");
+			return app;
 		}
 	}
 }

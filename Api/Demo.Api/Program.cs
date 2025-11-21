@@ -28,10 +28,17 @@ namespace Demo.Api
 			{
 				options.AddPolicy("AllowBlazor",
 					policy => policy
-						.WithOrigins("http://localhost:5067", "https://localhost:5067")
+						//.WithOrigins(
+						//	"http://localhost:5067", 
+						//	"https://localhost:5067",
+						//	"http://0.0.0.0:5067",
+						//	"http://0.0.0.0:5015")
+						.AllowAnyOrigin()
 						.AllowAnyMethod()
 						.AllowAnyHeader());
 			});
+
+			builder.WebHost.UseUrls("http://0.0.0.0:5015", "http://192.168.1.111:5015", "http://localhost:5015");
 
 			var app = builder.Build();
 
