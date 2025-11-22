@@ -38,7 +38,7 @@ namespace Demo.Api
 						.AllowAnyHeader());
 			});
 
-			builder.WebHost.UseUrls("http://0.0.0.0:5015", "http://192.168.1.111:5015", "http://localhost:5015");
+			//builder.WebHost.UseUrls("http://0.0.0.0:5015", "http://192.168.1.111:5015", "http://localhost:5015");
 
 			var app = builder.Build();
 
